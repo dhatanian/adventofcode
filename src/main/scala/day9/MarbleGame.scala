@@ -1,26 +1,43 @@
 package day9
 
-class MarbleGame(players: Int, lastMarble: Int) {
-  private var marbles = List[Int](0)
-  private var currentMarbleIndex: Int = 0
-  private var playersScores = Array.fill(players)(0)
+class Marble {
+  var value: Long = 0
+  var next: Marble = this
+  var previous: Marble = this
 
-  def findHighScore(): Int = {
-    for (marble <- 1 to lastMarble) {
-      println(marble)
-      val player = ((marble - 1) % players) + 1
-      if (marble % 23 == 0) {
-        currentMarbleIndex = (currentMarbleIndex - 7) % marbles.length
-        while (currentMarbleIndex < 0) {
-          currentMarbleIndex += marbles.length
+  def this(value: Long) {
+    this()
+    this.value = value
+  }
+
+  def this(value: Long, next: Marble, previous: Marble) {
+    this(value)
+    this.next = next
+    this.previous = previous
+  }
+}
+
+class MarbleGame(players: Int, lastMarble: Long) {
+  private var currentMarble = new Marble(0L)
+  private val playersScores = Array.fill(players)(0L)
+
+  def findHighScore(): Long = {
+    for (marbleValue <- 1L to lastMarble) {
+      val player = (((marbleValue - 1) % players) + 1).toInt
+      if (marbleValue % 23L == 0) {
+        for (_ <- 1 to 7) {
+          currentMarble = currentMarble.previous
         }
-        playersScores(player - 1) = playersScores(player - 1) + marble + marbles(currentMarbleIndex)
-        marbles = marbles.slice(0, currentMarbleIndex) ++ marbles.slice(currentMarbleIndex + 1, marbles.length)
+        playersScores(player - 1) = playersScores(player - 1) + marbleValue + currentMarble.value
+        currentMarble.previous.next = currentMarble.next
+        currentMarble.next.previous = currentMarble.previous
+        currentMarble = currentMarble.next
       } else {
-        currentMarbleIndex = (currentMarbleIndex + 2) % marbles.length
-        marbles = (marbles.slice(0, currentMarbleIndex) :+ marble) ++ marbles.slice(currentMarbleIndex, marbles.length)
-//        println(marbles)
-//        println(playersScores.toList)
+        currentMarble = currentMarble.next
+        val newMarble = new Marble(marbleValue, currentMarble.next, currentMarble)
+        newMarble.next.previous = newMarble
+        newMarble.previous.next = newMarble
+        currentMarble = newMarble
       }
     }
 
