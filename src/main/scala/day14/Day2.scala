@@ -1,6 +1,6 @@
 package day14
 
-object Solution {
+object Day2 {
 
   trait Node
 
@@ -19,9 +19,27 @@ object Solution {
     }
   }
 
-  var targetNumberOfRecipes = 306281
+  object Recipe {
+    def unapply(arg: Recipe): Option[(Node, Node, Int)] = Some((arg.previous, arg.next, arg.score))
+  }
+
+  var targetRecipes = "306281".map(c => c.toString).map(Integer.parseInt).toList.reverse
+
+  def foundPattern(lastRecipe: Recipe) = {
+    var currentRecipe = lastRecipe
+    if (lastRecipe.score != targetRecipes(0) && lastRecipe.previous != EmptyNode) {
+      currentRecipe = lastRecipe.previous.asInstanceOf[Recipe]
+    }
+    var i = 0;
+    while (i < targetRecipes.length && currentRecipe.previous != EmptyNode && targetRecipes(i) == currentRecipe.score) {
+      currentRecipe = currentRecipe.previous.asInstanceOf[Recipe]
+      i += 1
+    }
+    i == targetRecipes.length
+  }
 
   def main(args: Array[String]): Unit = {
+    val time = System.currentTimeMillis();
     val firstRecipe = new Recipe(EmptyNode, EmptyNode, 3)
     val secondRecipe = new Recipe(firstRecipe, EmptyNode, 7)
     firstRecipe.next = secondRecipe
@@ -31,7 +49,7 @@ object Solution {
     var lastRecipe = secondRecipe
 
     var constructedRecipes = 2
-    while (constructedRecipes < 10 + targetNumberOfRecipes) {
+    while (!foundPattern(lastRecipe)) {
       val totalScore = firstElf.score + secondElf.score
       if (totalScore >= 10) {
         val firstNewRecipeScore = totalScore / 10
@@ -54,7 +72,7 @@ object Solution {
       for (_ <- 0 to firstElfCurrentScore) {
         firstElf.next match {
           case EmptyNode => firstElf = firstRecipe
-          case _ => firstElf = firstElf.next.asInstanceOf[Recipe]
+          case Recipe(_, _, _) => firstElf = firstElf.next.asInstanceOf[Recipe]
         }
       }
       for (_ <- 0 to secondElfCurrentScore) {
@@ -65,14 +83,9 @@ object Solution {
       }
     }
 
-    var recipe = firstRecipe
-    for (_ <- 1 until targetNumberOfRecipes) {
-      recipe = recipe.next.asInstanceOf[Recipe]
-    }
-    for (_ <- 1 to 10) {
-      recipe = recipe.next.asInstanceOf[Recipe]
-      print(recipe.score)
-    }
-    println()
+    println(constructedRecipes - targetRecipes.length)
+    // Or, depending on whether we built one or two recipes (we can certainly pick programmatically)
+    println(constructedRecipes - targetRecipes.length - 1)
+    println(System.currentTimeMillis() - time)
   }
 }
