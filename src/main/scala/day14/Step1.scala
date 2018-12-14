@@ -1,6 +1,6 @@
 package day14
 
-object Day1 {
+object Step1 {
 
   trait Node
 
