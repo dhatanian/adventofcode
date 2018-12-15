@@ -4,7 +4,7 @@ import org.scalatest.FunSuite
 
 class BattleTest extends FunSuite {
 
-  test("testRunActualBattle") {
+  test("testRunActualBattleStep1") {
 
     val input =
       """################################
@@ -40,7 +40,49 @@ class BattleTest extends FunSuite {
         |#########....###################
         |################################"""
 
-    //Battle.runBattle(GridParser.parse(input))
+    Battle.runBattle(GridParser.parse(input))
+
+  }
+
+  test("testRunActualBattleStep2") {
+
+    val input =
+      """################################
+        |#G..#####G.#####################
+        |##.#####...#####################
+        |##.#######..####################
+        |#...#####.#.#.G...#.##...###...#
+        |##.######....#...G..#...####..##
+        |##....#....G.........E..####.###
+        |#####..#...G........G...##....##
+        |######.....G............#.....##
+        |######....G.............#....###
+        |#####..##.......E..##.#......###
+        |########.##...........##.....###
+        |####G.G.......#####..E###...####
+        |##.......G...#######..#####..###
+        |#........#..#########.###...####
+        |#.G..GG.###.#########.##...#####
+        |#...........#########......#####
+        |##..........#########..#.#######
+        |###G.G......#########....#######
+        |##...#.......#######.G...#######
+        |##.......G....#####.E...#.######
+        |###......E..G.E......E.....#####
+        |##.#................E.#...######
+        |#....#...................#######
+        |#....#E........E.##.#....#######
+        |#......###.#..#..##.#....#..####
+        |#...########..#..####....#..####
+        |#...########.#########......####
+        |#...########.###################
+        |############.###################
+        |#########....###################
+        |################################"""
+
+    //Found by manual dichotomy
+    Battle.elvishAttackPower = 34
+    println(Battle.runBattleAndCountDeadElves(GridParser.parse(input)))
 
   }
 
@@ -123,19 +165,19 @@ class BattleTest extends FunSuite {
         |#.....G.#
         |#########"""
 
-    //assert(Battle.runBattle(GridParser.parse(input)) == 18740)
-    var grid = GridParser.parse(input)
-    println(GridParser.gridAsString(grid))
-
-    for(i <- 1 to 21){
-      println(raw"Round $i")
-      grid = Battle.runRound(grid)
-      println(GridParser.gridAsString(grid))
-      println(grid.flatMap(_.toStream).filter({
-        case CellWithFighter(f) => true
-        case _ => false
-      }).map(_.asInstanceOf[CellWithFighter].fighter.health).toList)
-    }
+    assert(Battle.runBattle(GridParser.parse(input)) == 18740)
+//    var grid = GridParser.parse(input)
+//    println(GridParser.gridAsString(grid))
+//
+//    for(i <- 1 to 22){
+//      println(raw"Round $i")
+//      Battle.runRound(grid)
+//      println(GridParser.gridAsString(grid))
+//      println(grid.flatMap(_.toStream).filter({
+//        case CellWithFighter(f) => true
+//        case _ => false
+//      }).map(_.asInstanceOf[CellWithFighter].fighter.health).toList)
+//    }
   }
 
   test("testRound") {
@@ -153,7 +195,7 @@ class BattleTest extends FunSuite {
     println(GridParser.gridAsString(grid))
 
     for(_ <- 0 to 5){
-      grid = Battle.runRound(grid)
+      Battle.runRound(grid)
       println(GridParser.gridAsString(grid))
       println()
     }

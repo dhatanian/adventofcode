@@ -25,6 +25,7 @@ case class Goblin() extends Fighter {
 }
 
 case class Elf() extends Fighter {
+  this.attack = Battle.elvishAttackPower
   override def toChar: Char = 'E'
 
   override def isEnemyOf(fighter: Fighter): Boolean = fighter match {
