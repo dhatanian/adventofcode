@@ -107,6 +107,7 @@ object Solution {
           case Cell(Transition.\, None) => "\\"
           case Cell(Transition.X, None) => " "
           case Cell(Transition.+, None) => "+"
+          case _ => throw new Exception("Unkown cell")
         }
         print(character)
       }
