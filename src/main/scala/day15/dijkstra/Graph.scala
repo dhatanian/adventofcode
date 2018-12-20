@@ -34,6 +34,21 @@ trait Graph[N] { self =>
     go(Set(source), Set.empty)
   }
 
+  def bfsWithDistance(source: N): Map[N, Int] = {
+    def go(initial: Set[N], acc: Map[N, Int], distance: Int): Map[N, Int] =
+      if (initial.isEmpty) acc
+      else {
+        val explored = acc ++ initial.map((_, distance)).toMap
+        val neighbours = for {
+          node <- initial
+          (n, _) <- apply(node) if !explored.isDefinedAt(n)
+        } yield n
+        go(neighbours, explored, distance + 1)
+      }
+
+    go(Set(source), Map.empty, 0)
+  }
+
   /** Returns whether there is a path from `source` to `target`
     * in this graph.
     */
